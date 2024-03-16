@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通貨換算アプリ</title>
+</head>
+<body>
+    <h1>通貨換算アプリ</h1>
+
+    <input type="number" id="amount" placeholder="金額を入力">
+
+    <select id="from">
+        <option value="JPY">日本円</option>
+        <option value="USD">アメリカドル</option>
+        <option value="EUR">ユーロ</option>
+    </select>
+
+    <select id="to">
+        <option value="JPY">日本円</option>
+        <option value="USD">アメリカドル</option>
+        <option value="EUR">ユーロ</option>
+    </select>
+    <button onclick="convert()">換算</button>
+    <!-- 表示 -->
+    <p id="result"></p>
+
+    <script>
+       
+        async function convert() {
+            var amount = document.getElementById('amount').value;
+            if (!amount || amount < 0) {
+                alert("正しい金額を入力してください");
+                return;
+            }
+
+            var from = document.getElementById('from').value;
+            var to = document.getElementById('to').value;
+
+            var url = 'https://openexchangerates.org/api/latest.json?app_id=fc6caaf5906143fc83e71c9c6d13bda5';
+
+            //JSONで取得、非同期
+            try {
+                let response = await fetch(url);
+                let data = await response.json();
+
+                var rateFrom = data.rates[from]; //取得したfrom
+                var rateTo = data.rates[to]; //取得したto
+                var result = amount / rateFrom * rateTo; //計算式
+
+                document.getElementById('result').innerHTML = result.toFixed(2); //結果をresultへ表示、小数点以下2桁
+            } 
+            
+             //エラーの場合
+            catch (error) {
+                console.error(error);
+                alert("通貨換算に失敗しました。後ほど再試行してください。");
+            }
+        }
+
+    </script>
+</body>
+</html>

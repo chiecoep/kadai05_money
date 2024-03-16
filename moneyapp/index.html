@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylesheet.css">
+    <title>通貨換算アプリ</title>
+</head>
+<body>
+    <h1>通貨換算アプリ</h1>
+
+    <p>
+        <input type="number" id="amount" placeholder="金額を入力">
+        <button onclick="convert()">換算</button>
+    </p>
+    <p>
+        <select id="from">
+            <option value="JPY">日本円</option>
+            <option value="USD">米ドル</option>
+            <option value="EUR">ユーロ</option> 
+            <option value="KRW">韓ウォン</option>
+            <option value="CNY">人民元</option>
+        </select>
+        <span id="arrow" class="hidden">→</span>
+        <select id="to">
+            <option value="JPY">日本円</option>
+            <option value="USD">米ドル</option>
+            <option value="EUR">ユーロ</option>
+            <option value="GBP">英ポンド</option>
+            <option value="KRW">韓ウォン</option>
+            <option value="CNY">人民元</option>
+        </select>
+    </p>
+
+
+    <!-- 表示 -->
+    <div id="conversion-result" class="conversion-container hidden">
+        <p>
+        <img id="from-img" alt="" width="30px">
+        <span id="input"></span></p>
+        →        
+        <p><img id="to-img" alt="" width="30px">
+        <span id="result"></span></p>
+    </div>
+    <div class="text-container hidden">
+        <!-- 日時表示 -->
+        <p id="datetime" class="hidden"></p>
+    </div>
+    <div class="text-container hidden">
+        <!-- レート表示 -->
+        <p id="rate" class="hidden"></p>
+    </div>
+
+    <script>
+       
+        async function convert() {
+            var amount = document.getElementById('amount').value;
+            if (!amount || amount < 0) {
+                alert("正しい金額を入力してください");
+                return;
+            }
+
+            var from = document.getElementById('from').value;
+            var to = document.getElementById('to').value;
+
+            var url = 'https://openexchangerates.org/api/latest.json?app_id=fc6caaf5906143fc83e71c9c6d13bda5';
+
+            //JSONで取得、非同期
+            try {
+                let response = await fetch(url);
+                let data = await response.json();
+
+                var rateFrom = data.rates[from]; //取得したfrom
+                var rateTo = data.rates[to]; //取得したto
+                var result = amount / rateFrom * rateTo; //計算式
+
+                var fromSymbol, toSymbol;
+                if (from === "JPY") {
+                    fromSymbol = "￥";
+                } else if (from === "USD") {
+                    fromSymbol = "$";
+                } else if (from === "EUR") {
+                    fromSymbol = "€";
+                } else if (from === "GBP") {
+                    fromSymbol = "£";
+                } else if (from === "KRW") {
+                    fromSymbol = "₩";
+                } else if (from === "CNY") {
+                    fromSymbol = "¥";
+                }
+
+                if (to === "JPY") {
+                    toSymbol = "￥";
+                } else if (to === "USD") {
+                    toSymbol = "$";
+                } else if (to === "EUR") {
+                    toSymbol = "€";
+                } else if (to === "GBP") {
+                    toSymbol = "£";
+                } else if (to === "KRW") {
+                    toSymbol = "₩";
+                } else if (to === "CNY") {
+                    toSymbol = "¥";
+                }
+
+                document.getElementById('input').innerHTML = `${fromSymbol}${amount}`;
+                document.getElementById('result').innerHTML = `${toSymbol}${result.toFixed(2)}`; //結果をresultへ表示、小数点以下2桁
+
+                var fromImg, toImg;
+                if (from === "JPY") {
+                    fromImg = "img/coin/7-yen_64.png";
+                } else if (from === "USD") {
+                    fromImg = "img/coin/1-dollar_64.png";
+                } else if (from === "EUR") {
+                    fromImg = "img/coin/5-euro_64.png";
+                } else if (from === "GBP") {
+                    fromImg = "img/coin/2-pound_64.png";
+                }  else if (from === "KRW") {
+                    fromImg = "img/coin/9-won_64.png";
+                }  else if (from === "CNY") {
+                    fromImg = "img/coin/8-yuan_64.png";
+                }
+                
+
+                if (to === "JPY") {
+                    toImg = "img/coin/7-yen_64.png";
+                } else if (to === "USD") {
+                    toImg = "img/coin/1-dollar_64.png";
+                } else if (to === "EUR") {
+                    toImg = "img/coin/5-euro_64.png";
+                } else if (to === "GBP") {
+                    toImg = "img/coin/2-pound_64.png";
+                } else if (to === "KRW") {
+                    toImg = "img/coin/9-won_64.png";
+                } else if (to === "CNY") {
+                    toImg = "img/coin/8-yuan_64.png";
+                }
+            
+                document.getElementById('from-img').src = fromImg;
+                document.getElementById('to-img').src = toImg;
+
+
+                // 結果と画像を表示
+                document.getElementById('conversion-result').classList.remove('hidden');
+
+                // 日時を表示
+                document.getElementById('datetime').innerHTML = new Date().toLocaleString();
+                document.getElementById('datetime').classList.remove('hidden');
+
+                // レートを表示
+                document.getElementById('rate').innerHTML = `1 ${from} = ${(rateTo/rateFrom).toFixed(2)} ${to}`;
+                document.getElementById('rate').classList.remove('hidden');
+            } 
+            
+             //エラーの場合
+            catch (error) {
+                console.error(error);
+                alert("通貨換算に失敗しました。後ほど再試行してください。");
+            }
+        }
+
+    </script>
+</body>
+</html>
