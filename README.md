@@ -8,7 +8,7 @@
 
 ## ③DEMO
 
-https://chiecoep.github.io/kadai05_money/
+https://chiecoep.github.io/kadai05_money/moneyapp/
 
 ## ④工夫した点・こだわった点
 
